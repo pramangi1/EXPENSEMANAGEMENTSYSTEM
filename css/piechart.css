@@ -1,0 +1,89 @@
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin-top: 30px;
+    margin-bottom: 60px;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Chart Title */
+.chart-container h2 {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+/* Pie Chart Canvas */
+canvas {
+    max-width: 400px;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%;
+    padding: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+canvas:hover {
+    transform: scale(1.02);
+}
+
+/* Custom Legend Styling */
+.custom-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #333;
+    margin-right: 12px;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.legend-label {
+    font-weight: 500;
+    color: #333;
+}
+
+.legend-item:hover {
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .chart-container h2 {
+        font-size: 24px;
+    }
+
+    canvas {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .chart-container h2 {
+        font-size: 20px;
+    }
+
+    canvas {
+        max-width: 95%;
+    }
+}
