@@ -95,6 +95,29 @@ body {
     
     width: 400px;
 }
+.register-flex {
+    display: flex;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+}
+
+.image-side {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-side img {
+    max-width: 100%;
+    height: auto;
+}
+
 h2 {
     text-align: center;
     margin-bottom: 20px;
@@ -147,6 +170,12 @@ a:hover {
 </style>
 </head>
 <body>
+<?php include 'header.php'; ?>
+
+   <div class="register-flex">
+    <div class="image-side">
+        <img src="image/singup.png" alt="Sign Up Image">
+    </div>
     <div class="container">
         <h2>Register</h2>
 

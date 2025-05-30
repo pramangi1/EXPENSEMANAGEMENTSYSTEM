@@ -113,7 +113,29 @@ $conn->close();
     margin-bottom: 20px;
     color: #333;
 }
+.register-flex {
+    display: flex;
+    max-width: 900px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
 
+/* Left side: image */
+.image-side {
+    flex: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.image-side img {
+    width: 90%;
+    height: auto;
+    object-fit: contain;
+}
 
 .login-container {
   padding: 20px;
@@ -153,10 +175,12 @@ button:hover {
 
 </head>
 <body> 
-<!-- <div class="header">
-  <div class="branding">Budget Buddy</div>
-</div> -->
+ <?php include 'header.php'; ?>
 
+   <div class="register-flex">
+    <div class="image-side">
+        <img src="image/login.png" alt=" login  Image">
+    </div>
 
 
      <div class="login-container"> 

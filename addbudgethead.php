@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['title'])) {
 <head>
     <meta charset="UTF-8">
     <title>Add Budget Heads</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/hello.css">
     <style>
         .form-container {
             width: 450px;
@@ -80,9 +80,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['title'])) {
     </style>
 </head>
 <body>
-
- <div class="sidebar">
-    <h3>Budget Buddy</h3>
+<div class="sidebar">
+    <?php include 'header.php';?>
     <ul>
         <li><a href="dashboard.php" class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
         <li><a href="list.php" class="<?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>">Expense List</a></li>
@@ -91,9 +90,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['title'])) {
         <li><a href="reports.php" class="<?= basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : '' ?>">Reports</a></li>
         <li><a href="saving.php" class="<?= basename($_SERVER['PHP_SELF']) == 'saving.php' ? 'active' : '' ?>">Savings</a></li>
         <li><a href="logout.php">Logout</a></li>
-
     </ul>
 </div>
+
   
 
 <div class="form-container">
@@ -133,6 +132,6 @@ function addBudgetHeadField() {
     container.appendChild(newField);
 }
 </script>
- 
+ <?php include 'footer.php'; ?>
 </body>
 </html>

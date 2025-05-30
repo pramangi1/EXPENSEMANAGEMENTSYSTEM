@@ -123,7 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['head_amounts']) && $bu
 <head>
     <meta charset="UTF-8">
     <title>Distribute Budget into Heads</title>
-    <link rel="stylesheet" href="css/dashboard.css"> 
+    <link rel="stylesheet" href="css/hello.css"> 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/head.js" defer></script>
 
@@ -225,7 +225,7 @@ if (isset($_SESSION['alert_message'])) {
 >
 
 <div class="sidebar">
-    <h3>Budget Buddy</h3>
+    <?php  include 'header.php';?>
     <ul>
         <li><a href="dashboard.php" class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
         <li><a href="list.php" class="<?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>">Expense List</a></li>

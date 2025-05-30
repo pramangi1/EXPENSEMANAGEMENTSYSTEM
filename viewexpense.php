@@ -46,7 +46,7 @@ $expenses = $result->fetch_all(MYSQLI_ASSOC);
 
         .sidebar {
             width: 250px;
-            background: #2c3e50;
+            background: rgb(4, 37, 70);
             color: white;
             padding: 20px 0;
             height: 100vh;
@@ -81,13 +81,13 @@ $expenses = $result->fetch_all(MYSQLI_ASSOC);
         }
 
         .sidebar ul li a:hover {
-            background: #34495e;
-            color: #ecf0f1;
+            background: white;
+            color: rgb(16, 91, 123);
             padding-left: 25px;
         }
 
         .sidebar a.active {
-            background-color: #0b73ea;
+            background-color: rgb(10, 88, 177);
             color: white;
             font-weight: bold;
             padding-left: 10px;
@@ -116,7 +116,7 @@ $expenses = $result->fetch_all(MYSQLI_ASSOC);
         }
 
         th {
-            background-color: #2e4a72;
+            background-color: rgb(2, 25, 58);
             color: white;
             font-weight: bold;
         }
@@ -140,11 +140,34 @@ $expenses = $result->fetch_all(MYSQLI_ASSOC);
         .edit-btn:hover {
             background-color: #2980b9;
         }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: #444;
+        }
+
+        .swal2-input.full-width,
+        .swal2-textarea.full-width {
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        .custom-swal-popup {
+            width: 500px !important;
+        }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <h3>Budget Buddy</h3>
+        <?php include 'header.php'; ?>
         <ul>
             <li><a href="dashboard.php" class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
             <li><a href="list.php" class="<?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>">Expense List</a></li>
@@ -153,7 +176,6 @@ $expenses = $result->fetch_all(MYSQLI_ASSOC);
             <li><a href="reports.php" class="<?= basename($_SERVER['PHP_SELF']) == 'reports.php' ? 'active' : '' ?>">Reports</a></li>
             <li><a href="saving.php" class="<?= basename($_SERVER['PHP_SELF']) == 'saving.php' ? 'active' : '' ?>">Savings</a></li>
             <li><a href="logout.php">Logout</a></li>
-
         </ul>
     </div>
 
@@ -180,58 +202,87 @@ $expenses = $result->fetch_all(MYSQLI_ASSOC);
             </tbody>
         </table>
     </div>
+
     <script>
-    window.onload = function () {
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
+        window.onload = function () {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const id = this.dataset.id;
 
-            fetch('getexpense.php?id=' + id)
-                .then(res => res.json())
-                .then(data => {
-                    Swal.fire({
-                        title: 'Edit Expense',
-                        html: `
-                            <input type="hidden" id="expense-id" value="${data.expense_id}">
-                            <input type="hidden" id="bhid" value="${data.bhid}">
-                            <input type="hidden" id="budget_id" value="${data.budget_id}">
+                    fetch('getexpense.php?id=' + id)
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire({
+                                title: 'Edit Expense',
+                                html: `
+    <div class="form-group">
+        <label for="amount">Amount</label>
+        <input id="amount" class="swal2-input full-width" placeholder="Amount" value="${data.amount}">
+    </div>
 
-                            <input id="amount" class="swal2-input" placeholder="Amount" value="${data.amount}">
-                            <input class="swal2-input" value="Budget Head: ${data.title}" readonly>
-                            <input class="swal2-input" value="Allocated: ${data.allocated_amount}" readonly>
-                            <input id="date" type="date" class="swal2-input" value="${data.expense_date}">
-                            <textarea id="description" class="swal2-textarea" placeholder="Description">${data.description}</textarea>
-                        `,
-                        showCancelButton: true,
-                        confirmButtonText: 'Update',
-                        preConfirm: () => {
-                            return fetch('updateexpense.php', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    expense_id: document.getElementById('expense-id').value,
-                                    bhid: document.getElementById('bhid').value,
-                                    budget_id: document.getElementById('budget_id').value,
-                                    amount: document.getElementById('amount').value,
-                                    expense_date: document.getElementById('date').value,
-                                    description: document.getElementById('description').value
-                                })
-                            }).then(res => res.json());
-                        }
-                    }).then(result => {
-                        if (result.isConfirmed && result.value.success) {
-                            Swal.fire('Updated!', 'Expense updated successfully.', 'success')
-                                 .then(() => location.reload());
-                        } else if (result.value && !result.value.success) {
-                            Swal.fire('Error', result.value.message, 'error');
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    Swal.fire('Error', 'Could not load expense data.', 'error');
+    <div class="form-group">
+        <label>Budget Head</label>
+        <input class="swal2-input full-width" value="${data.title}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label>Allocated Amount</label>
+        <input class="swal2-input full-width" value="${data.allocated_amount}" readonly>
+    </div>
+
+    <div class="form-group">
+        <label for="date">Date</label>
+        <input id="date" type="date" class="swal2-input full-width" value="${data.expense_date}">
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" class="swal2-textarea full-width" placeholder="Description">${data.description}</textarea>
+    </div>
+
+    <input type="hidden" id="expense-id" value="${data.expense_id}">
+    <input type="hidden" id="bhid" value="${data.bhid}">
+    <input type="hidden" id="budget_id" value="${data.budget_id}">
+`,
+
+                                showCancelButton: true,
+                                confirmButtonText: 'Update',
+                                cancelButtonText: 'Cancel',
+                                customClass: {
+                                    popup: 'custom-swal-popup'
+                                },
+                                preConfirm: () => {
+                                    return fetch('updateexpense.php', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            expense_id: document.getElementById('expense-id').value,
+                                            bhid: document.getElementById('bhid').value,
+                                            budget_id: document.getElementById('budget_id').value,
+                                            amount: document.getElementById('amount').value,
+                                            expense_date: document.getElementById('date').value,
+                                            description: document.getElementById('description').value
+                                        })
+                                    }).then(res => res.json());
+                                }
+                            }).then(result => {
+                                if (result.isConfirmed && result.value.success) {
+                                    Swal.fire('Updated!', 'Expense updated successfully.', 'success')
+                                        .then(() => location.reload());
+                                } else if (result.value && !result.value.success) {
+                                    Swal.fire('Error', result.value.message, 'error');
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Fetch error:', error);
+                            Swal.fire('Error', 'Could not load expense data.', 'error');
+                        });
                 });
-        });
-    });
-}
-</script>
+            });
+        };
+    </script>
+
+    <?php include 'footer.php'; ?>
+</body>
+</html>

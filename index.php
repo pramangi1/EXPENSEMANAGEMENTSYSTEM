@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>Budget Buddy - Your Expense Manager</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- ✅ Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
     * {
       box-sizing: border-box;
@@ -15,6 +19,21 @@
     body {
       background-color: #f9fafb;
       color: #333;
+    }
+
+    .branding {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      color: rgb(24, 150, 35);
+    }
+
+    .logo {
+      height: 40px;
+      width: 40px;
+      object-fit: contain;
     }
 
     header {
@@ -119,12 +138,11 @@
     footer {
       background-color: #f3f4f6;
       text-align: center;
-      text-color: black
       padding: 20px;
       font-size: 14px;
       color: #555;
       margin-top: 40px;
-    } 
+    }
 
     @media (max-width: 600px) {
       .feature-grid {
@@ -136,11 +154,13 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header>
-    <h1>Budget Buddy</h1>
+    <div class="branding">
+      <img src="image/expenseslogo1.png" alt="Logo" class="logo">
+      <span>Budget Buddy</span>
+    </div>
+
     <nav>
-      <!-- <a href="#features">Features</a> -->
       <a href="login.php">Login</a>
       <a href="register.php" class="btn-primary">Get Started</a>
     </nav>
@@ -150,28 +170,36 @@
   <section class="hero">
     <h2>Take Control of Your Finances</h2>
     <p>Track expenses, set budgets, and gain insights with Budget Buddy.</p>
-    <!-- <a href="register.php" class="btn-primary">Start Free</a> -->
   </section>
 
-  <!-- Features Section -->
-  <section class="features" id="features">
-    <h3>Why Choose Budget Buddy?</h3>
-    <div class="feature-grid">
-      <div class="feature">
-        <div class="feature-icon"></div>
-        <h4>Smart Budgeting</h4>
-        <p>Allocate budgets across categories and monitor your spending effectively.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon"></div>
-        <h4>Expense Tracking</h4>
-        <p>Track daily expenses with ease and get alerts on over-spending.</p>
-      </div>
-      
+  
+<section class="features" id="features">
+  <h3>Why Choose Budget Buddy?</h3>
+  <div class="feature-grid">
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+      <h4>Smart Budgeting</h4>
+      <p>Allocate budgets across categories and monitor your spending effectively.</p>
     </div>
-  </section>
-<?php include 'footer.php';?>
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-wallet"></i></div>
+      <h4>Expense Tracking</h4>
+      <p>Track daily expenses with ease and get alerts on over-spending.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-piggy-bank"></i></div>
+      <h4>Monthly Savings</h4>
+      <p>Save automatically each month and watch your financial health grow.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+      <h4>Insightful Reports</h4>
+      <p>Visualize where your money goes and plan better with rich reports.</p>
+    </div>
+  </div>
+</section>
 
+  <?php include 'footer.php'; ?>
 
 </body>
 </html>

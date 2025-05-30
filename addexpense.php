@@ -16,18 +16,17 @@ if (!isset($_SESSION['u_id'])) {
 }
 
 $u_id = $_SESSION['u_id'];
+$u_name=$_SESSION['u_name'];
 $current_budget_id = null;
 
-// ✅ Get current system month and year
 $today = new DateTime();
 $current_month_name = $today->format('F');
 $current_year_value = $today->format('Y');
 
-// ✅ Fetch month_id and year_id from lookup tables
 $month_id = 0;
 $year_id = 0;
 
-// Get month_id
+
 $monthStmt = $conn->prepare("SELECT month_id FROM budget_month WHERE month_name = ?");
 $monthStmt->bind_param("s", $current_month_name);
 $monthStmt->execute();
@@ -147,7 +146,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $current_budget_id) {
 <html>
 <head>
     <title>Add Expense</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/hello.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
    <script src="js/expense.js" defer></script>
 
@@ -178,6 +177,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $current_budget_id) {
     max-width: 1000px;
     margin: auto;
 }
+/* .user-info {
+  display: flex;
+  align-items: right;
+  gap: 12px;
+}
+
+.user-avatar {
+  background-color: #2d9cdb;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  font-size: 16px;
+  color: #333;
+}
+ */
 
 /* Expense Form Styling */
 .expense-form {
@@ -250,7 +272,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $current_budget_id) {
 </head>
 <body>
 <div class="sidebar">
-    <h3>Budget Buddy</h3>
+    <?php include 'header.php';?>
     <ul>
         <li><a href="dashboard.php" class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
         <li><a href="list.php" class="<?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>">Expense List</a></li>
@@ -267,8 +289,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $current_budget_id) {
     <div class="main-content">
     <div class="form-wrapper">
         <div class="expense-form">
+          <div class="eader">
             <h2>Add Expense</h2>
             <?php if ($current_budget_id): ?>
+                <!-- <div class="user-info">
+    <div class="user-avatar">
+      <span><?php echo strtoupper(substr($u_name, 0, 1)); ?></span>
+    </div>
+    <div class="user-name"><?php echo $u_name; ?></div>
+  </div> -->
+            </div>
             <form method="POST" id="addExpenseForm">
                 <!-- Budget info -->
                 <label for="budget_id">Budget:</label>

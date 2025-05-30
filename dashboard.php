@@ -122,6 +122,7 @@ $budgetResult = $stmtBudget->get_result();
 $total_budget = ($budgetResult->num_rows > 0) ? $budgetResult->fetch_assoc()['total_budget'] : 0;
 $stmtBudget->close();
 
+
 $expenseQuery = "
     SELECT SUM(e.amount) AS total_expenses 
     FROM expenses e
@@ -175,6 +176,17 @@ $stmt->bind_param('i', $budget_id);
 $stmt->execute();
 $budgetData = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
+$percentages = [];
+foreach ($budgetData as $row) {
+    $allocated = floatval($row['allocated_amount']);
+    $spent = floatval($row['spent_amount']);
+    $percent = ($allocated > 0) ? round(($spent / $allocated) * 100, 1) : 0;
+
+    $percentages[] = [
+        'title' => $row['title'],
+        'percent' => $percent
+    ];
+}
 
 $threshold = $total_budget * 0.8;
 $show_alert = ($total_budget > 0 && $total_expenses >= $threshold && $total_expenses > 0);
@@ -189,10 +201,12 @@ $show_alert = ($total_budget > 0 && $total_expenses >= $threshold && $total_expe
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Fonts and CSS -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/dashboard.css">
-<link rel="stylesheet" href="css/piechart.css">
+ <link rel="stylesheet" href="css/hello.css"> 
+<!-- <link rel="stylesheet" href="css/piechart.css"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <!-- Chart.js and Plugins -->
+ 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 
@@ -317,7 +331,10 @@ $(function () {
     });
 });
 
-
+function toggleNotifications() {
+    const dropdown = document.getElementById('notifDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
 
 </script>
 
@@ -330,6 +347,350 @@ $(function () {
 <!-- Optional (if needed later) -->
 <!-- <script src="js/dashboard.js" defer></script> -->
 <style>
+   
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  position: fixed;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.header button {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s;
+}
+
+.header button:hover {
+  background: #2980b9;
+}
+
+.dashboard-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 20px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.dashboard-card {
+   background:rgb(190, 186, 186);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  flex: 1 1 500px;
+  max-width: 600px;
+  min-width: 300px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  min-height: 400px; /* ✅ Ensure enough height for canvas */
+}
+
+
+
+.dashboard-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-weight: 600;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+canvas#expensesPieChart {
+  max-width: 100%;
+  width: 100% !important;
+  height: 350px !important; /* ✅ Explicit height */
+  display: block;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.summary-table th,
+.summary-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.summary-table thead th {
+  background-color: rgb(39, 73, 141);
+  color: white;
+  font-weight: bold;
+}
+
+ @media (max-width: 768px) {
+  .dashboard-section {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard-card {
+    max-width: 100%;
+  }
+} 
+
+/* ===== Cards Styles ===== */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h5 {
+  font-size: 1rem;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.bg-primary {
+  border-left: 5px solid #3498db;
+}
+
+.bg-danger {
+  border-left: 5px solid #e74c3c;
+}
+
+.bg-success {
+  border-left: 5px solid #2ecc71;
+} 
+
+/* ===== Modal Styles ===== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  transition: all 0.3s;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 10% auto;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  top: 15px;
+  right: 25px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #333;
+}
+
+.modal h3 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+#budget-form input,
+#budget-form select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+#budget-form button {
+  width: 100%;
+  padding: 12px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#budget-form button:hover {
+  background: #2980b9;
+}
+
+/* ===== Responsive Styles ===== */
+@media (max-width: 768px) {
+  .sidebar {
+      width: 0;
+      overflow: hidden;
+  }
+
+  .sidebar.active {
+      width: 250px;
+  }
+
+  .main-content {
+      margin-left: 0;
+      width: 100%;
+  }
+
+  .cards {
+      grid-template-columns: 1fr;
+  }
+}  
+    .notification {
+    position: relative;
+    display: inline-block;
+    margin-right: 30px;
+}
+
+.notification .icon {
+    cursor: pointer;
+    position: relative;
+}
+
+.notification .icon .fa-bell {
+    font-size: 22px;
+    color: #444;
+}
+
+.notification .badge {
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 3px 7px;
+    font-size: 12px;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+}
+
+.notification .dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background: white;
+    border: 1px solid #ccc;
+    width: 300px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    z-index: 1000;
+}
+
+.notification .dropdown h4 {
+    padding: 10px;
+    margin: 0;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.notification .dropdown ul {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.notification .dropdown ul li {
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+.notification .view-all {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    border-top: 1px solid #eee;
+    background: #f9f9f9;
+    text-decoration: none;
+    color: #2980b9;
+}
+.spent-high {
+    color: #dc3545; /* Red */
+    font-weight: bold;
+}
+.spent-warning {
+    color: #fd7e14; /* Orange */
+    font-weight: bold;
+}
+.spent-ok {
+    color: #28a745; /* Green */
+}
+
+
 .threshold-bar-container {
     width: 300px;
     margin: 20px 0 20px 40px; /* Pushes it left */
@@ -370,6 +731,49 @@ $(function () {
     width: 100%;
     text-align: center;
 }
+.dashboard-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  padding: 20px;
+  justify-content: space-between;
+}
+
+.dashboard-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex: 1 1 45%;
+  min-width: 300px;
+  max-width: 48%;
+}
+
+.dashboard-card h2 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.summary-table th,
+.summary-table td {
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.summary-table thead th {
+  background-color: rgb(39, 73, 141);
+  color: white;
+  font-weight: bold;
+}
+
+
 
 </style>
 </head>
@@ -377,7 +781,7 @@ $(function () {
 <body>
 
 <div class="sidebar">
-    <h3>Budget Buddy</h3>
+<?php include 'header.php'; ?>
     <ul>
     <li><a href="dashboard.php" class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
     <li><a href="list.php" class="<?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>">Expense List</a></li>
@@ -391,14 +795,44 @@ $(function () {
 
 <div class="main-content">
     <div class="header">
-        <h2>
-        Dashboard</h2>
+        <!-- <h2> Dashboard</h2> -->
         <div class="user-info">
             <div class="user-avatar">
                 <span><?php echo strtoupper(substr($u_name, 0, 1)); ?></span>
             </div>
             <div class="user-name"><?php echo $u_name; ?></div>
         </div>
+       <div class="notification">
+    <div class="icon" onclick="toggleNotifications()">
+        <i class="fa fa-bell"></i>
+        <span class="badge"><?= count($percentages) ?></span>
+    </div>
+
+    <div class="dropdown" id="notifDropdown">
+        <h4><?= count($percentages) ?> Budget Allocations</h4>
+        <ul>
+            <?php foreach ($percentages as $item): 
+                $percent = $item['percent'];
+                $title = htmlspecialchars($item['title']);
+
+                // Assign a class based on percent spent
+                if ($percent >= 100) {
+                    $class = "spent-high";     // Red
+                } elseif ($percent >= 80) {
+                    $class = "spent-warning";  // Orange
+                } else {
+                    $class = "spent-ok";       // Green
+                }
+            ?>
+            <li class="<?= $class ?>">
+                You have spent <strong><?= $percent ?>%</strong> of your allocation on <strong><?= $title ?></strong>.
+            </li>
+            <?php endforeach; ?>
+        </ul>
+        <a href="budgethead.php" class="view-all">View Budget Heads</a>
+    </div>
+</div>
+
         <button onclick="openBudgetForm()">Set Budget</button>
     </div>
     <div class="threshold-bar-container">
@@ -430,45 +864,42 @@ $(function () {
             <p>NRS <?php echo number_format($remaining_budget, 2); ?></p>
         </div>
     </div>
+    <div class="dashboard-section">
+  <!-- Pie Chart Section -->
+  <div class="dashboard-card">
+    <h2>Expenses by Budget Head</h2>
+    <canvas id="expensesPieChart"></canvas>
+  </div>
 
-    <div class="container">
-    <!-- Pie Chart Section -->
-    <div class="chart-container" style="width: 55%; float: left;">
-        <h2>Expenses by Budget Head</h2>
-        <canvas id="expensesPieChart" width="400" height="400"></canvas>
-        <div id="customLegend" class="custom-legend"></div>
-
-    </div>
-
-    <!-- Budget Summary Table Section -->
-    <div class="table-container" style="width: 40%; float: left;margin-top: 50px;">
-        <h2>Allocated vs Remaining</h2>
-        <table border="1" cellpadding="10" style="width: 100%; border-collapse: collapse;">
-            <thead>
-                <tr style="background-color:rgb(39, 73, 141); text-align: center; color: white;">
-                    <th>Budget Head</th>
-                    <th>Allocated Amount</th>
-                    <th>Spent</th>
-                    <th>Remaining</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($budgetData as $row) {
-                    // Calculate remaining amount
-                    $remainingAmount = $row['allocated_amount'] - $row['spent_amount'];
-                    echo "<tr>
-                            <td>" . htmlspecialchars($row['title']) . "</td>
-                            <td>NRS" . number_format($row['allocated_amount'], 2) . "</td>
-                            <td>NRS" . number_format($row['spent_amount'], 2) . "</td>
-                            <td>NRS" . number_format($remainingAmount, 2) . "</td>
-                        </tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
+  <!-- Table Section -->
+  <div class="dashboard-card">
+    <h2>Allocated vs Remaining</h2>
+    <table class="summary-table">
+      <thead>
+        <tr>
+          <th>Budget Head</th>
+          <th>Allocated Amount</th>
+          <th>Spent</th>
+          <th>Remaining</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($budgetData as $row): 
+          $remainingAmount = $row['allocated_amount'] - $row['spent_amount'];
+        ?>
+        <tr>
+          <td><?= htmlspecialchars($row['title']) ?></td>
+          <td>NRS<?= number_format($row['allocated_amount'], 2) ?></td>
+          <td>NRS<?= number_format($row['spent_amount'], 2) ?></td>
+          <td>NRS<?= number_format($remainingAmount, 2) ?></td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  </div>
 </div>
+
+
 
     <div id="budget-modal" class="modal">
         <div class="modal-content">

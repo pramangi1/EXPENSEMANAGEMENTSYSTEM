@@ -8,6 +8,7 @@ if (!isset($_SESSION['u_id'])) {
 }
 
 $u_id = $_SESSION['u_id'];
+$u_name=$_SESSION['u_name'];
 
 // 🛠 Use filtered values if present, otherwise fallback to current system date
 $month = isset($_GET['month']) ? $_GET['month'] : date('m');
@@ -67,7 +68,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <title>Expense List</title>
-    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/hello.css"> 
     <style>
         table {
             border-collapse: collapse;
@@ -86,6 +87,42 @@ $result = $stmt->get_result();
         tr:hover {
             background-color: #f1f1f1;
         }
+        .eader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #e0e0e0;
+} 
+
+.ser-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ser-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color:rgb(25, 85, 148);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.ser-name {
+  font-weight: 500;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
         .btn-view {
             background-color: #2e4a72;
             color: white;
@@ -96,12 +133,13 @@ $result = $stmt->get_result();
         .btn-view:hover {
             background-color: #1f3a5d;
         }
+
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h3>Budget Buddy</h3>
+    <?php include 'header.php';?>
     <ul>
         <li><a href="dashboard.php" class="<?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : '' ?>">Dashboard</a></li>
         <li><a href="list.php" class="<?= basename($_SERVER['PHP_SELF']) == 'list.php' ? 'active' : '' ?>">Expense List</a></li>
@@ -115,9 +153,16 @@ $result = $stmt->get_result();
 
 <!-- Main Content -->
 <div class="main-content">
-    <div class="header">
-        <h2>Expense List</h2>
+    <div class="eader">
+  <h2>Expense List</h2>
+  <div class="ser-info">
+    <div class="ser-avatar">
+      <span><?php echo strtoupper(substr($u_name, 0, 1)); ?></span>
     </div>
+    <div class="ser-name"><?php echo $u_name; ?></div>
+  </div>
+</div>
+
 
     <?php include 'filter.php'; ?>
 
@@ -169,7 +214,7 @@ $result = $stmt->get_result();
             $color = $total_remaining < 0 ? 'red' : 'green';
 
             echo "<tr style='font-weight: bold; background-color: #f8f8f8;'>";
-            echo "<td colspan='4' style='text-align:right;'>Total Savings:</td>";
+            echo "<td colspan='4' style='text-align:right;'>Total remain:</td>";
             echo "<td style='color:$color;'>" . number_format($total_remaining, 2) . "</td>";
             echo "<td colspan='3'></td>";
             echo "</tr>";
